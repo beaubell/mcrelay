@@ -6,13 +6,13 @@ REMOTEIP=$2
 if [ -z "$LOCALIP" ]
 then
     echo "Error: LOCALIP not set!"
-    return 1
+    exit 1
 fi
 
 if [ -z "$REMOTEIP" ]
 then
     echo "Error:REMOTEIP not set!"
-    return 1
+    exit 1
 fi
 
 
