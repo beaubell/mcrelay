@@ -12,7 +12,7 @@ private:
     boost::asio::ip::udp::endpoint mcendpoint_;
     boost::asio::ip::udp::socket socket_;
     boost::asio::ip::udp::endpoint sender_endpoint_;
-    std::array<char, 1024> data_;
+    std::array<char, 2048> data_;
     boost::asio::ip::address local_address_;
     
 public:
@@ -49,6 +49,8 @@ public:
                               {
                                   //if (!ec && message_count_ < max_message_count)
                                   //    do_timeout();
+                                  if (ec)
+                                      std::cerr << "Multicast send error: " << ec << std::endl;
                               });
     }
     
@@ -66,11 +68,14 @@ private:
                                            //std::cout << std::endl;
 
                                            if ((sender_endpoint_.address() != local_address_) && rEP) {
-                                               std::cout << "Multicast Receiving from: " << sender_endpoint_ << " (len" << std::to_string(length) << ")" << std::endl;
+                                               std::cout << "Multicast Receiving from: " << sender_endpoint_ << " (len:" << std::to_string(length) << ")" << std::endl;
                                                rEP->do_send(data_.data(), length);
                                                
                                            }
 
+                                           do_receive();
+                                       } else {
+                                           std::cerr << "Multicast recv error: " << ec << std::endl;
                                            do_receive();
                                        }
                                    });

@@ -14,7 +14,7 @@ private:
     udp::socket socket_;
     udp::endpoint sender_endpoint_;
     udp::endpoint receiver_endpoint_;
-    enum { max_length = 1024 };
+    enum { max_length = 2048 };
     char data_[max_length];
 
 public:
@@ -36,7 +36,7 @@ public:
                                    {
                                        if (!ec && bytes_recvd > 0)
                                        {
-                                           std::cout << "UDP Receiving from: " << receiver_endpoint_ << " (len" << std::to_string(bytes_recvd) << ")" << std::endl;
+                                           std::cout << "UDP Receiving from: " << receiver_endpoint_ << " (len:" << std::to_string(bytes_recvd) << ")" << std::endl;
 
                                            if (rEP)
                                                rEP->do_send(data_, bytes_recvd);
@@ -45,6 +45,7 @@ public:
                                        }
                                        else
                                        {
+                                           std::cout << "UDP Receiving Error: " << ec << std::endl;
                                            do_receive();
                                        }
                                    });
