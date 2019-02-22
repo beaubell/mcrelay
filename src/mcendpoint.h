@@ -13,16 +13,19 @@ private:
     boost::asio::ip::udp::socket socket_;
     boost::asio::ip::udp::endpoint sender_endpoint_;
     std::array<char, 1024> data_;
+    boost::asio::ip::address local_address_;
     
 public:
     MCEndpoint(boost::asio::io_context& io_context,
-             const boost::asio::ip::address& listen_address,
+             const boost::asio::ip::address& local_address,
              const boost::asio::ip::address& multicast_address,
              const uint16_t port)
     : socket_(io_context),
       port_(port),
-      mcendpoint_(multicast_address, port)
+      mcendpoint_(multicast_address, port),
+      local_address_(local_address)
     {
+        boost::asio::ip::address listen_address = boost::asio::ip::make_address("0.0.0.0");
         // Create the socket so that multiple may be bound to the same address.
         boost::asio::ip::udp::endpoint listen_endpoint(
             listen_address, port_);
@@ -58,10 +61,12 @@ private:
                                    {
                                        if (!ec)
                                        {
-                                           std::cout.write(data_.data(), length);
-                                           std::cout << std::endl;
+                                           std::cout << "Multicast Receiving from: " << sender_endpoint_ << " (len" << std::to_string(length) << ")" << std::endl;
+                                     
+                                           //std::cout.write(data_.data(), length);
+                                           //std::cout << std::endl;
 
-                                           if (rEP)
+                                           if ((sender_endpoint_.address() != local_address_) && rEP)
                                                rEP->do_send(data_.data(), length);
 
                                            do_receive();
