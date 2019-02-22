@@ -34,3 +34,5 @@ TARGET_LINK_LIBRARIES(udprelay
 )
 
 set_property(TARGET udprelay PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/udprelay.sh ${CMAKE_CURRENT_BINARY_DIR}/udprelay.sh COPYONLY)
