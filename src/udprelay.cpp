@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 {
   try
   {
-    if (argc != 6)
+    if (argc != 7)
     {
       std::cerr << "Usage: udprelay <listen_address> <multicast_address> <multicast_port> <udp_listen_port> <remote_udp_address> <remote_udp_port>\n";
       std::cerr << "  For IPv4, try:\n";

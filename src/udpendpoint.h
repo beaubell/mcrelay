@@ -50,10 +50,13 @@ public:
     
     void do_send(void* data, std::size_t length)
     {
+        std::cout << "UDP Sending to: " << sender_endpoint_ << " (len" << std::to_string(length) << ")" << std::endl;
         socket_.async_send_to(
             boost::asio::buffer(data, length), sender_endpoint_,
-                              [this](boost::system::error_code /*ec*/, std::size_t /*bytes_sent*/)
+                              [this](boost::system::error_code ec, std::size_t /*bytes_sent*/)
                               {
+                                  if (ec)
+                                      std::cout << "UDP Sending Error: " << ec << std::endl;
                                   //do_receive();
                               });
     }

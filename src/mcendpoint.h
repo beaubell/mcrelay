@@ -20,7 +20,8 @@ public:
              const boost::asio::ip::address& multicast_address,
              const uint16_t port)
     : socket_(io_context),
-      port_(port)
+      port_(port),
+      mcendpoint_(multicast_address, port)
     {
         // Create the socket so that multiple may be bound to the same address.
         boost::asio::ip::udp::endpoint listen_endpoint(
@@ -37,6 +38,8 @@ public:
     }
     
     void do_send(void* data, size_t size) {
+        
+        std::cout << "Multicast Sending to: " << mcendpoint_ << " (len" << std::to_string(size) << ")" << std::endl;
         socket_.async_send_to(
             boost::asio::buffer(data, size), mcendpoint_,
                               [this](boost::system::error_code ec, std::size_t /*length*/)
