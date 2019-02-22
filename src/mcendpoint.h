@@ -61,13 +61,15 @@ private:
                                    {
                                        if (!ec)
                                        {
-                                           std::cout << "Multicast Receiving from: " << sender_endpoint_ << " (len" << std::to_string(length) << ")" << std::endl;
                                      
                                            //std::cout.write(data_.data(), length);
                                            //std::cout << std::endl;
 
-                                           if ((sender_endpoint_.address() != local_address_) && rEP)
+                                           if ((sender_endpoint_.address() != local_address_) && rEP) {
+                                               std::cout << "Multicast Receiving from: " << sender_endpoint_ << " (len" << std::to_string(length) << ")" << std::endl;
                                                rEP->do_send(data_.data(), length);
+                                               
+                                           }
 
                                            do_receive();
                                        }

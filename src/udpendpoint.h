@@ -36,9 +36,11 @@ public:
                                    {
                                        if (!ec && bytes_recvd > 0)
                                        {
+                                           std::cout << "UDP Receiving from: " << receiver_endpoint_ << " (len" << std::to_string(bytes_recvd) << ")" << std::endl;
+
                                            if (rEP)
                                                rEP->do_send(data_, bytes_recvd);
-                                           
+
                                            do_receive();
                                        }
                                        else
