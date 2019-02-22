@@ -16,9 +16,9 @@ int main(int argc, char* argv[])
   {
     if (argc != 6)
     {
-      std::cerr << "Usage: udprelay <listen_address> <multicast_address> <multicast_port> <udp_address> <upd_port>\n";
+      std::cerr << "Usage: udprelay <listen_address> <multicast_address> <multicast_port> <udp_listen_port> <remote_udp_address> <remote_udp_port>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    receiver 0.0.0.0 239.2.3.1 6969 10.10.202.78 10000\n";
+      std::cerr << "    receiver 0.0.0.0 239.2.3.1 6969 10001 10.10.202.78 10000\n";
       std::cerr << "  For IPv6, try:\n";
       std::cerr << "    receiver 0::0 ff31::8000:1234\n";
       return 1;
@@ -32,9 +32,15 @@ int main(int argc, char* argv[])
         );
     
     UDPEndpoint ep_edp(io_context,
-                 boost::asio::ip::make_address(argv[4]),
-                 strtoul(argv[5], 0 , 10)
+                 strtoul(argv[4], 0 , 10),
+                 boost::asio::ip::make_address(argv[5]),
+                 strtoul(argv[6], 0 , 10)
     );
+    
+    // Setup relays
+    ep_edp.setRelay(&ep_mc);
+    ep_mc.setRelay(&ep_edp);
+
     io_context.run();
   }
   catch (std::exception& e)

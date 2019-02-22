@@ -9,6 +9,10 @@ class MCEndpoint : public RelayEndpoint
 {
 private:
     uint16_t port_;
+    boost::asio::ip::udp::endpoint mcendpoint_;
+    boost::asio::ip::udp::socket socket_;
+    boost::asio::ip::udp::endpoint sender_endpoint_;
+    std::array<char, 1024> data_;
     
 public:
     MCEndpoint(boost::asio::io_context& io_context,
@@ -32,7 +36,15 @@ public:
         do_receive();
     }
     
-    //send()
+    void do_send(void* data, size_t size) {
+        socket_.async_send_to(
+            boost::asio::buffer(data, size), mcendpoint_,
+                              [this](boost::system::error_code ec, std::size_t /*length*/)
+                              {
+                                  //if (!ec && message_count_ < max_message_count)
+                                  //    do_timeout();
+                              });
+    }
     
 private:
     void do_receive()
@@ -45,13 +57,13 @@ private:
                                        {
                                            std::cout.write(data_.data(), length);
                                            std::cout << std::endl;
-                                           
+
+                                           if (rEP)
+                                               rEP->do_send(data_.data(), length);
+
                                            do_receive();
                                        }
                                    });
     }
     
-    boost::asio::ip::udp::socket socket_;
-    boost::asio::ip::udp::endpoint sender_endpoint_;
-    std::array<char, 1024> data_;
 };
