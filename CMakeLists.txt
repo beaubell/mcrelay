@@ -1,38 +1,36 @@
 cmake_minimum_required(VERSION 3.11)
 
-project (rs-udprelay C CXX)
+# Set a default build type if none was specified
+set(DEFAULT_BUILD_TYPE "RelWithDebInfo")
 
-#SET(Boost_USE_STATIC_LIBS on)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE
+            STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+            "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
+project (udprelay
+        VERSION 0.0.1
+        DESCRIPTION "A simple bi-directional UDP unicast to multicast relay.  Useful for relaying multicast traffic between networks that otherwise wouldn't route multicast."
+        LANGUAGES CXX
+)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(Boost_USE_STATIC_LIBS on)
 find_package(Boost 1.66 REQUIRED system)
 
 find_package(Threads)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
-
-SET(CMAKE_CXX_STANDARD 11)
-#SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
-#SET(CMAKE_CXX_FLAGS_DEBUG "-g")
-#SET(CMAKE_CXX_FLAGS_RELEASE "-Os -DNDEBUG")
-
-#SET(CMAKE_FINDBRARY_SUFFIXES ".a")
-#SET(BUILD_SHARED_LIBS OFF)
-#SET(CMAKE_EXE_LINKER_FLAGS "-static")
-
-#SUBDIRS(shalib)
-
-include_directories(${Boost_INCLUDE_DIRS})
-
-add_executable (udprelay
-	src/udprelay.cpp
-)
-
-TARGET_LINK_LIBRARIES(udprelay
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${Boost_LIBRARIES}
-)
-
-set_property(TARGET udprelay PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/udprelay.sh ${CMAKE_CURRENT_BINARY_DIR}/udprelay.sh COPYONLY)
+
+add_subdirectory(src)
+
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CPACK_PACKAGE_CONTACT "Beau V.C. Bellamy <bellamy.beau@gmail.com>")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libc6 (< 2.4)")
+    include(CPack)
+endif()
