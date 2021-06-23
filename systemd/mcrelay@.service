@@ -1,0 +1,16 @@
+[Unit]
+Description=Setup a Multicast/Unicast UDP relay: %I
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/mcrelay/mcrelay@%i
+ExecStartPre=/bin/bash -l -c 'echo "mcrelay $LISTEN_ADDRESS $MULTICAST_ADDRESS $MULTICAST_PORT $LISTEN_PORT $REMOTE_UDP_ADDRESS $REMOTE_UDP_PORT" > "/tmp/mcrelay@%i.debug"'
+ExecStart=mcrelay $LISTEN_ADDRESS $MULTICAST_ADDRESS $MULTICAST_PORT $LISTEN_PORT $REMOTE_UDP_ADDRESS $REMOTE_UDP_PORT
+User=nobody
+
+# Restart every >2 seconds to avoid StartLimitInterval failure
+RestartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
